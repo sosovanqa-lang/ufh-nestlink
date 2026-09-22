@@ -1,0 +1,22 @@
+{
+  "name": "ufh-nestlink",
+  "version": "2.0.0",
+  "description": "UFH NestLink Student Residence Management System",
+  "main": "server.js",
+  "scripts": {
+    "init-db": "node init_db.js",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^13.0.3",
+    "connect-sqlite3": "^0.9.16",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1"
+  }
+}
