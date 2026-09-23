@@ -9,6 +9,8 @@ const { one } = require('./lib/db');
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 const PORT = Number(
   process.env.PORT || 3000
 );
