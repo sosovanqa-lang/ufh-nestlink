@@ -17,6 +17,7 @@
     "connect-sqlite3": "^0.9.16",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
-    "express-session": "^1.18.1"
+    "express-session": "^1.18.1",
+    "nodemailer": "^10.0.10"
   }
 }

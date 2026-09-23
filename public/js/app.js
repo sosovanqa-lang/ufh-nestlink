@@ -1,1 +1,341 @@
-window.App={user:null,view:null,async boot(){try{const x=await API('/api/auth/me');this.start(x.user)}catch(e){Auth.landingPage()}},start(user){this.user=user;const mod=user.role==='residence_staff'?Residence:Student;document.getElementById('app').innerHTML=`<header class="dashHeader"><div class="dashBrand"><div class="crestMini">UFH</div><div><b>UFH-<span>NestLink</span></b><small>${esc(user.role==='residence_staff'?'Residence Staff Portal':'Student Residence Portal')}</small></div></div><nav class="nav" id="nav"></nav><div class="dashUser"><div><b>${esc(user.fullName)}</b><small>${esc(user.residenceName||user.email)}</small></div><button class="btn btnGold" id="logout">Sign out</button></div></header><main class="container" id="view"></main>`;this.view=document.getElementById('view');const nav=document.getElementById('nav');mod.nav.forEach(([id,label],i)=>{const b=document.createElement('button');b.textContent=label;b.onclick=()=>{[...nav.children].forEach(x=>x.classList.remove('active'));b.classList.add('active');mod.render(id)};if(i===0)b.classList.add('active');nav.appendChild(b)});document.getElementById('logout').onclick=async()=>{await API('/api/auth/logout',{method:'POST'});location.reload()};mod.render('dashboard')}};App.boot();
+window.App = {
+
+  user: null,
+
+  view: null,
+
+
+  /* =========================================================
+     APPLICATION BOOT
+  ========================================================= */
+
+  async boot() {
+
+    try {
+
+      const response =
+        await API(
+          '/api/auth/me'
+        );
+
+      this.start(
+        response.user
+      );
+
+    } catch (error) {
+
+      Auth.landingPage();
+
+    }
+  },
+
+
+  /* =========================================================
+     START AUTHENTICATED APPLICATION
+  ========================================================= */
+
+  start(user) {
+
+    this.user = user;
+
+
+    /* =======================================================
+       ROLE ROUTING
+
+       student
+         -> Student Portal
+
+       residence_staff
+         -> Residence Staff Portal
+
+       maintenance_staff
+         -> Maintenance Department Portal
+    ======================================================= */
+
+    let mod;
+
+    let portalName;
+
+
+    if (
+      user.role ===
+      'residence_staff'
+    ) {
+
+      mod =
+        Residence;
+
+      portalName =
+        'Residence Staff Portal';
+
+    } else if (
+      user.role ===
+      'maintenance_staff'
+    ) {
+
+      mod =
+        Maintenance;
+
+      portalName =
+        'Maintenance Department Portal';
+
+    } else if (
+      user.role ===
+      'student'
+    ) {
+
+      mod =
+        Student;
+
+      portalName =
+        'Student Residence Portal';
+
+    } else {
+
+      document
+        .getElementById(
+          'app'
+        )
+        .innerHTML = `
+
+          <main class="container">
+
+            <section class="hero">
+
+              <h1>
+                Access unavailable
+              </h1>
+
+              <p>
+                Your account does not have
+                a supported NestLink role.
+              </p>
+
+            </section>
+
+          </main>
+
+        `;
+
+      return;
+
+    }
+
+
+    /* =======================================================
+       DASHBOARD SHELL
+    ======================================================= */
+
+    document
+      .getElementById(
+        'app'
+      )
+      .innerHTML = `
+
+        <header class="dashHeader">
+
+          <div class="dashBrand">
+
+            <div class="crestMini">
+              UFH
+            </div>
+
+
+            <div>
+
+              <b>
+                UFH-<span>NestLink</span>
+              </b>
+
+              <small>
+                ${esc(
+                  portalName
+                )}
+              </small>
+
+            </div>
+
+          </div>
+
+
+          <nav
+            class="nav"
+            id="nav"
+          ></nav>
+
+
+          <div class="dashUser">
+
+            <div>
+
+              <b>
+                ${esc(
+                  user.fullName
+                )}
+              </b>
+
+              <small>
+
+                ${esc(
+                  user.role ===
+                  'maintenance_staff'
+
+                    ? 'Maintenance Department'
+
+                    : (
+                        user.residenceName ||
+                        user.email
+                      )
+                )}
+
+              </small>
+
+            </div>
+
+
+            <button
+              class="btn btnGold"
+              id="logout"
+            >
+              Sign out
+            </button>
+
+          </div>
+
+        </header>
+
+
+        <main
+          class="container"
+          id="view"
+        ></main>
+
+      `;
+
+
+    this.view =
+      document.getElementById(
+        'view'
+      );
+
+
+    /* =======================================================
+       NAVIGATION
+    ======================================================= */
+
+    const nav =
+      document.getElementById(
+        'nav'
+      );
+
+
+    mod.nav.forEach(
+      (
+        [id, label],
+        index
+      ) => {
+
+        const button =
+          document.createElement(
+            'button'
+          );
+
+
+        button.textContent =
+          label;
+
+
+        button.onclick =
+          () => {
+
+            [
+              ...nav.children
+            ].forEach(
+              item =>
+                item.classList.remove(
+                  'active'
+                )
+            );
+
+
+            button
+              .classList
+              .add(
+                'active'
+              );
+
+
+            mod.render(
+              id
+            );
+
+          };
+
+
+        if (index === 0) {
+
+          button
+            .classList
+            .add(
+              'active'
+            );
+
+        }
+
+
+        nav.appendChild(
+          button
+        );
+
+      }
+    );
+
+
+    /* =======================================================
+       LOGOUT
+    ======================================================= */
+
+    document
+      .getElementById(
+        'logout'
+      )
+      .onclick =
+        async () => {
+
+          try {
+
+            await API(
+              '/api/auth/logout',
+              {
+                method:
+                  'POST'
+              }
+            );
+
+          } finally {
+
+            location.reload();
+
+          }
+
+        };
+
+
+    /* =======================================================
+       LOAD DEFAULT DASHBOARD
+    ======================================================= */
+
+    mod.render(
+      'dashboard'
+    );
+
+  }
+
+};
+
+
+/* =========================================================
+   START NESTLINK
+========================================================= */
+
+App.boot();
